@@ -116,7 +116,20 @@ export const publicApi = {
   
   // Contact
   getContactInfo: () => api.get('/public/contact'),
-  submitConsultation: (data) => api.post('/public/consultations', data)
+  submitConsultation: (data) => api.post('/public/consultations', data),
+  
+  // Testimonials
+  getTestimonials: () => api.get('/public/testimonials'),
+  
+  // Trusted Companies
+  getTrustedCompanies: () => api.get('/public/trusted-companies'),
+  
+  // Articles
+  getArticles: () => api.get('/public/articles'),
+  getArticle: (id) => api.get(`/public/articles/${id}`),
+  
+  // Home Banners
+  getHomeBanners: () => api.get('/public/home-banners')
 };
 
 // Admin API
@@ -159,8 +172,72 @@ export const adminApi = {
   updateContact: (id, data) => api.put(`/admin/contacts/${id}`, data),
   
   // Consultations
-  getConsultations: () => api.get('/admin/consultations'),
-  updateConsultationStatus: (id, status) => api.put(`/admin/consultations/${id}/status`, status)
+  getConsultations() {
+    return api.get('/admin/consultations');
+  },
+  updateConsultationStatus(id, status) {
+    return api.put(`/admin/consultations/${id}/status`, { status });
+  },
+
+  // Testimonials
+  getAdminTestimonials() {
+    return api.get('/admin/testimonials');
+  },
+  getTestimonialById(id) {
+    return api.get(`/admin/testimonials/${id}`);
+  },
+  createTestimonial(data) {
+    return api.post('/admin/testimonials', data);
+  },
+  updateTestimonial(id, data) {
+    return api.put(`/admin/testimonials/${id}`, data);
+  },
+  deleteTestimonial(id) {
+    return api.delete(`/admin/testimonials/${id}`);
+  },
+  updateTestimonialsOrder(orderedIds) {
+    return api.put('/admin/testimonials/order', { orderedIds });
+  },
+
+  // Trusted Companies
+  getTrustedCompanies() {
+    return api.get('/admin/trusted-companies');
+  },
+  getTrustedCompanyById(id) {
+    return api.get(`/admin/trusted-companies/${id}`);
+  },
+  createTrustedCompany(data) {
+    return api.post('/admin/trusted-companies', data);
+  },
+  updateTrustedCompany(id, data) {
+    return api.put(`/admin/trusted-companies/${id}`, data);
+  },
+  deleteTrustedCompany(id) {
+    return api.delete(`/admin/trusted-companies/${id}`);
+  },
+  updateTrustedCompaniesOrder(orderedIds) {
+    return api.put('/admin/trusted-companies/order', { orderedIds });
+  },
+
+  // Articles
+  getArticles() {
+    return api.get('/admin/articles');
+  },
+  searchArticles(query) {
+    return api.get('/admin/articles/search', { params: { query } });
+  },
+  getArticleById(id) {
+    return api.get(`/admin/articles/${id}`);
+  },
+  createArticle(data) {
+    return api.post('/admin/articles', data);
+  },
+  updateArticle(id, data) {
+    return api.put(`/admin/articles/${id}`, data);
+  },
+  deleteArticle(id) {
+    return api.delete(`/admin/articles/${id}`);
+  },
 };
 
-export default api; 
+export default api;

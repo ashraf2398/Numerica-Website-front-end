@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Contexts
 import { AuthProvider } from './context/AuthContext';
@@ -19,6 +21,8 @@ import About from './pages/public/About';
 import Services from './pages/public/Services';
 import Contact from './pages/public/Contact';
 import Team from './pages/public/Team';
+import ArticlesList from './pages/public/ArticlesList';
+import ArticleDetail from './pages/public/ArticleDetail';
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -30,6 +34,9 @@ import AdminServices from './pages/admin/Services';
 import Contacts from './pages/admin/Contacts';
 import TeamMembers from './pages/admin/TeamMembers';
 import Consultations from './pages/admin/Consultations';
+import TestimonialsAdmin from './pages/admin/TestimonialsAdmin';
+import TrustedCompaniesAdmin from './pages/admin/TrustedCompaniesAdmin';
+import ArticlesAdmin from './pages/admin/ArticlesAdmin';
 
 // Layout component for public pages
 const PublicLayout = ({ children }) => {
@@ -92,10 +99,15 @@ function App() {
                 path="/articles" 
                 element={
                   <PublicLayout>
-                    <div className="pt-32 pb-16">
-                      <h1 className="text-3xl text-center">Articles Page</h1>
-                      <p className="text-center">(To be implemented)</p>
-                    </div>
+                    <ArticlesList />
+                  </PublicLayout>
+                } 
+              />
+              <Route 
+                path="/articles/:id" 
+                element={
+                  <PublicLayout>
+                    <ArticleDetail />
                   </PublicLayout>
                 } 
               />
@@ -149,6 +161,18 @@ function App() {
                   path="consultations" 
                   element={<Consultations />} 
                 />
+                <Route 
+                  path="testimonials" 
+                  element={<TestimonialsAdmin />} 
+                />
+                <Route 
+                  path="trusted-companies" 
+                  element={<TrustedCompaniesAdmin />} 
+                />
+                <Route 
+                  path="articles" 
+                  element={<ArticlesAdmin />} 
+                />
                 {/* Redirect to dashboard if no specific admin route */}
                 <Route 
                   path="" 
@@ -172,6 +196,18 @@ function App() {
           </DataProvider>
         </AuthProvider>
       </Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </ThemeProvider>
   );
 }

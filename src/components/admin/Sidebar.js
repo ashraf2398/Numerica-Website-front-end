@@ -1,24 +1,44 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+
+// Helper function to get NavLink classes based on active state and theme
+const getNavLinkClasses = (isDarkMode, isActive) => {
+  if (isActive) {
+    return isDarkMode 
+      ? 'bg-gray-700 text-white' 
+      : 'bg-blue-600 text-white';
+  }
+  return isDarkMode 
+    ? 'text-gray-300 hover:bg-gray-700' 
+    : 'text-gray-700 hover:bg-gray-100';
+};
 
 const Sidebar = () => {
   const { logout } = useAuth();
+  const { isDarkMode } = useTheme();
 
   return (
-    <div className="bg-gray-800 text-white w-64 min-h-screen flex flex-col">
-      <div className="p-5 border-b border-gray-700">
+    <div className={`w-64 min-h-screen flex flex-col transition-colors duration-300 ${
+      isDarkMode 
+        ? 'bg-gray-800 text-gray-100 border-r border-gray-700' 
+        : 'bg-white text-gray-800 border-r border-gray-200 shadow-sm'
+    }`}>
+      <div className={`p-5 border-b ${
+        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+      }`}>
         <h1 className="text-xl font-bold">Numerica Dashboard</h1>
       </div>
       
       <nav className="flex-grow p-4 overflow-y-auto">
-        <p className="text-xs text-gray-400 uppercase font-bold mb-4">Main</p>
+        <p className={`text-xs uppercase font-bold mb-4 mt-6 px-4 ${
+          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+        }`}>Main</p>
         <NavLink 
           to="/admin/dashboard" 
           className={({isActive}) => 
-            `flex items-center py-2 px-4 rounded transition-colors ${
-              isActive ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700'
-            }`
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
           }
         >
           <span className="mr-2">
@@ -29,14 +49,14 @@ const Sidebar = () => {
           Dashboard
         </NavLink>
         
-        <p className="text-xs text-gray-400 uppercase font-bold mt-6 mb-4">Management</p>
+        <p className={`text-xs uppercase font-bold mb-4 mt-6 px-4 ${
+          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+        }`}>Management</p>
         
         <NavLink 
           to="/admin/admins" 
           className={({isActive}) => 
-            `flex items-center py-2 px-4 rounded transition-colors ${
-              isActive ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700'
-            }`
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
           }
         >
           <span className="mr-2">
@@ -50,9 +70,7 @@ const Sidebar = () => {
         <NavLink 
           to="/admin/about" 
           className={({isActive}) => 
-            `flex items-center py-2 px-4 rounded transition-colors ${
-              isActive ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700'
-            }`
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
           }
         >
           <span className="mr-2">
@@ -66,9 +84,7 @@ const Sidebar = () => {
         <NavLink 
           to="/admin/categories" 
           className={({isActive}) => 
-            `flex items-center py-2 px-4 rounded transition-colors ${
-              isActive ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700'
-            }`
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
           }
         >
           <span className="mr-2">
@@ -82,9 +98,7 @@ const Sidebar = () => {
         <NavLink 
           to="/admin/services" 
           className={({isActive}) => 
-            `flex items-center py-2 px-4 rounded transition-colors ${
-              isActive ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700'
-            }`
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
           }
         >
           <span className="mr-2">
@@ -99,9 +113,7 @@ const Sidebar = () => {
         <NavLink 
           to="/admin/contacts" 
           className={({isActive}) => 
-            `flex items-center py-2 px-4 rounded transition-colors ${
-              isActive ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700'
-            }`
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
           }
         >
           <span className="mr-2">
@@ -115,9 +127,7 @@ const Sidebar = () => {
         <NavLink 
           to="/admin/team" 
           className={({isActive}) => 
-            `flex items-center py-2 px-4 rounded transition-colors ${
-              isActive ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700'
-            }`
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
           }
         >
           <span className="mr-2">
@@ -131,9 +141,7 @@ const Sidebar = () => {
         <NavLink 
           to="/admin/consultations" 
           className={({isActive}) => 
-            `flex items-center py-2 px-4 rounded transition-colors ${
-              isActive ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700'
-            }`
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
           }
         >
           <span className="mr-2">
@@ -143,12 +151,60 @@ const Sidebar = () => {
           </span>
           Consultations
         </NavLink>
+
+        <NavLink 
+          to="/admin/testimonials" 
+          className={({isActive}) => 
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
+          }
+        >
+          <span className="mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM8 7a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm1 3a1 1 0 100 2h2a1 1 0 100-2H9z" clipRule="evenodd" />
+            </svg>
+          </span>
+          Testimonials
+        </NavLink>
+
+        <NavLink 
+          to="/admin/trusted-companies" 
+          className={({isActive}) => 
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
+          }
+        >
+          <span className="mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm10 9h-3v2h3v-2zm0-4h-3v2h3V9zm0-4h-3v2h3V5zM8 5h2v2H8V5zm0 4h2v2H8V9zm0 4h2v2H8v-2z" clipRule="evenodd" />
+            </svg>
+          </span>
+          Trusted Companies
+        </NavLink>
+
+        <NavLink 
+          to="/admin/articles" 
+          className={({isActive}) => 
+            `flex items-center py-2 px-4 rounded transition-colors ${getNavLinkClasses(isDarkMode, isActive)}`
+          }
+        >
+          <span className="mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1v2a1 1 0 01-2 0V5a1 1 0 112 0zm0 4v2a1 1 0 11-2 0V9a1 1 0 112 0zm0 4v2a1 1 0 11-2 0v-2a1 1 0 112 0z" clipRule="evenodd" />
+            </svg>
+          </span>
+          Articles
+        </NavLink>
       </nav>
       
-      <div className="p-4 border-t border-gray-700">
+      <div className={`p-4 border-t ${
+        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+      }`}>
         <button 
           onClick={logout}
-          className="w-full flex items-center py-2 px-4 rounded text-gray-300 hover:bg-gray-700 transition-colors"
+          className={`w-full flex items-center py-2 px-4 rounded transition-colors ${
+            isDarkMode 
+              ? 'text-gray-300 hover:bg-gray-700' 
+              : 'text-gray-700 hover:bg-gray-100'
+          }`}
         >
           <span className="mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

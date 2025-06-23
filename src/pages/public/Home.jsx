@@ -1,61 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
+import { publicApi } from '../../utils/api';
 import Container from '../../components/ui/Container';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import FadeInSection from '../../components/ui/FadeInSection';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
+import ServicesSection from '../../components/services/ServicesSection';
 
 const Home = () => {
-  // Services data
-  const services = [
-    {
-      id: 1,
-      title: 'Accounting Services',
-      description: 'Comprehensive bookkeeping, financial reporting, and accounting solutions tailored to your business needs.',
-      icon: (
-        <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-        </svg>
-      ),
-      features: ['Monthly Financial Reports', 'Expense Tracking', 'Cash Flow Management']
-    },
-    {
-      id: 2,
-      title: 'Tax Planning & Compliance',
-      description: 'Strategic tax planning and preparation to minimize liabilities while ensuring full compliance.',
-      icon: (
-        <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
-        </svg>
-      ),
-      features: ['Tax Strategy Planning', 'Compliance Management', 'Audit Support']
-    },
-    {
-      id: 3,
-      title: 'Audit & Assurance',
-      description: 'Independent financial audits to verify accuracy and compliance with accounting standards.',
-      icon: (
-        <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-      ),
-      features: ['Financial Audits', 'Risk Assessment', 'Compliance Reviews']
-    },
-    {
-      id: 4,
-      title: 'Financial Advisory',
-      description: 'Expert financial guidance to help your business make informed decisions and achieve goals.',
-      icon: (
-        <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      features: ['Strategic Planning', 'Investment Advice', 'Growth Consulting']
-    }
-  ];
-
   // Stats data
   const stats = [
     { id: 1, value: '500+', label: 'Clients Served' },
@@ -64,133 +18,238 @@ const Home = () => {
     { id: 4, value: '35', label: 'Expert Accountants' }
   ];
 
-  // Testimonials data
-  const testimonials = [
-    {
-      id: 1,
-      quote: "Numérica transformed our financial operations and helped us save thousands in tax liability. Their expertise is unmatched.",
-      author: "Sarah Johnson",
-      position: "CEO, TechStart Inc.",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-      rating: 5
-    },
-    {
-      id: 2,
-      quote: "Their financial advisory services gave us the clarity we needed to scale our business effectively. Highly professional team.",
-      author: "Michael Chen",
-      position: "Founder, GrowSmart Solutions",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-      rating: 5
-    },
-    {
-      id: 3,
-      quote: "The most responsive and thorough accounting team we've ever worked with. They truly care about our success.",
-      author: "Alicia Martinez",
-      position: "CFO, Nexus Enterprises",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-      rating: 5
+  // State for testimonials
+  const [testimonials, setTestimonials] = useState([]);
+  const [testimonialsLoading, setTestimonialsLoading] = useState(true);
+  const [testimonialsError, setTestimonialsError] = useState(null);
+
+  // State for home banners
+  const [banners, setBanners] = useState([]);
+  const [bannersLoading, setBannersLoading] = useState(true);
+  const [bannersError, setBannersError] = useState(null);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const currentBanner = banners[currentBannerIndex] || {};
+
+  // State for trusted companies
+  const [trustedCompanies, setTrustedCompanies] = useState([]);
+  const [companiesLoading, setCompaniesLoading] = useState(true);
+  const [companiesError, setCompaniesError] = useState(null);
+
+  // Fetch home banners
+  const fetchBanners = async () => {
+    try {
+      const response = await publicApi.getHomeBanners();
+      setBanners(response.data || []);
+      setBannersLoading(false);
+    } catch (err) {
+      console.error('Error fetching home banners:', err);
+      setBannersError('Failed to load banners. Please try again later.');
+      setBannersLoading(false);
     }
-  ];
+  };
+
+  // Fetch testimonials
+  const fetchTestimonials = async () => {
+    try {
+      const response = await publicApi.getTestimonials();
+      setTestimonials(response.data || []);
+      setTestimonialsLoading(false);
+    } catch (err) {
+      console.error('Error fetching testimonials:', err);
+      setTestimonialsError('Failed to load testimonials. Please try again later.');
+      setTestimonialsLoading(false);
+    }
+  };
+
+  // Fetch trusted companies
+  const fetchTrustedCompanies = async () => {
+    try {
+      const response = await publicApi.getTrustedCompanies();
+      setTrustedCompanies(response.data || []);
+      setCompaniesLoading(false);
+    } catch (err) {
+      console.error('Error fetching trusted companies:', err);
+      setCompaniesError('Failed to load trusted companies.');
+      setCompaniesLoading(false);
+    }
+  };
+
+  // Handle manual banner navigation
+  const goToBanner = (index) => {
+    setCurrentBannerIndex(index);
+  };
+
+  // Initial data fetching
+  useEffect(() => {
+    // Auto-rotate banners
+    const bannerInterval = setInterval(() => {
+      if (banners.length > 1) {
+        setCurrentBannerIndex((prevIndex) => 
+          prevIndex === banners.length - 1 ? 0 : prevIndex + 1
+        );
+      }
+    }, 8000);
+
+    // Fetch all initial data
+    const fetchInitialData = async () => {
+      await Promise.all([
+        fetchTestimonials(),
+        fetchTrustedCompanies(),
+        fetchBanners()
+      ]);
+    };
+
+    fetchInitialData();
+
+    return () => clearInterval(bannerInterval);
+  }, [banners.length]);
+
+
 
   // Get the current theme
   const { isDarkMode } = useTheme();
 
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section with Banner Carousel */}
       <section className={`relative min-h-screen flex items-center overflow-hidden ${
         isDarkMode 
           ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
-          : 'bg-gradient-to-br from-primary-600 to-primary-800'
+          : 'bg-gradient-to-br from-primary-900 to-primary-800'
       }`}>
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white rounded-full mix-blend-overlay blur-3xl animate-float"></div>
-          <div className={`absolute bottom-1/3 right-1/4 w-96 h-96 ${
-            isDarkMode ? 'bg-primary-600' : 'bg-primary-400'
-          } rounded-full mix-blend-overlay blur-3xl animate-float animation-delay-2000`}></div>
-          <div className={`absolute top-1/2 right-1/3 w-80 h-80 ${
-            isDarkMode ? 'bg-primary-500' : 'bg-primary-300'
-          } rounded-full mix-blend-overlay blur-3xl animate-float animation-delay-4000`}></div>
-        </div>
-        
-        <Container className="relative z-10 py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <FadeInSection>
-              <div className="inline-flex items-center px-6 py-2.5 bg-white/10 backdrop-blur-md rounded-full text-white text-sm font-medium mb-8 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                <span className="w-2.5 h-2.5 bg-green-400 rounded-full mr-3 animate-pulse"></span>
-                Trusted by 500+ Businesses
-              </div>
-              
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight text-white">
-                Expert
-                <span className={`block bg-gradient-to-r from-white ${
-                  isDarkMode ? 'to-primary-300' : 'to-primary-200'
-                } bg-clip-text text-transparent`}>
-                  Financial
-                </span>
-                <span className="block text-4xl md:text-6xl lg:text-7xl font-semibold text-white/90">Solutions</span>
-              </h1>
-              
-              <p className="text-xl md:text-2xl mb-10 text-white/90 leading-relaxed max-w-2xl">
-                Comprehensive accounting, tax planning, and financial advisory services 
-                to help your business thrive in today's complex financial landscape.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
-                <Link to="/contact">
-                  <Button 
-                    variant="primary"
-                    size="lg" 
-                    className="group relative overflow-hidden px-8 py-4 text-lg font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
-                  >
-                    <span className="mr-2">Get Started</span>
-                    <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Button>
-                </Link>
-                <Link to="/services">
-                  <Button 
-                    variant="ghost" 
-                    size="lg"
-                    className="text-white border border-white/30 hover:bg-white/10"
-                  >
-                    Our Services
-                  </Button>
-                </Link>
-              </div>
-            </FadeInSection>
+        {bannersLoading ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+          </div>
+        ) : bannersError ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-white/80">{bannersError}</p>
+          </div>
+        ) : banners.length > 0 ? (
+          <>
+            {/* Banner Background */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out"
+              style={{
+                backgroundImage: `url(${currentBanner.image_url})`,
+                opacity: 0.15
+              }}
+            ></div>
             
-            <FadeInSection direction="right" delay={300} className="hidden lg:block">
-              <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-r from-white/20 to-transparent rounded-2xl blur-2xl"></div>
-                <img 
-                  src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2942&q=80" 
-                  alt="Financial consulting" 
-                  className="relative rounded-2xl shadow-2xl object-cover h-[600px] w-full"
-                />
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden opacity-20">
+              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white rounded-full mix-blend-overlay blur-3xl animate-float"></div>
+              <div className={`absolute bottom-1/3 right-1/4 w-96 h-96 ${
+                isDarkMode ? 'bg-primary-600' : 'bg-primary-400'
+              } rounded-full mix-blend-overlay blur-3xl animate-float animation-delay-2000`}></div>
+              <div className={`absolute top-1/2 right-1/3 w-80 h-80 ${
+                isDarkMode ? 'bg-primary-500' : 'bg-primary-300'
+              } rounded-full mix-blend-overlay blur-3xl animate-float animation-delay-4000`}></div>
+            </div>
+            
+            <Container className="relative z-10 py-32">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <FadeInSection>
+                  <div className="inline-flex items-center px-6 py-2.5 bg-white/10 backdrop-blur-md rounded-full text-white text-sm font-medium mb-8 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                    <span className="w-2.5 h-2.5 bg-green-400 rounded-full mr-3 animate-pulse"></span>
+                    Trusted by 500+ Businesses
+                  </div>
+                  
+                  <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight text-white">
+                    {currentBanner.title.split(' ')[0]}
+                    <span className={`block bg-gradient-to-r from-white ${
+                      isDarkMode ? 'to-primary-300' : 'to-primary-200'
+                    } bg-clip-text text-transparent`}>
+                      {currentBanner.title.split(' ').slice(1).join(' ')}
+                    </span>
+                  </h1>
+                  
+                  <p className="text-xl md:text-2xl mb-10 text-white/90 leading-relaxed max-w-2xl">
+                    {currentBanner.subtitle}
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
+                    <Link to="/contact">
+                      <Button 
+                        variant="primary"
+                        size="lg" 
+                        className="group relative overflow-hidden px-8 py-4 text-lg font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                      >
+                        <span className="mr-2">Get Started</span>
+                        <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </Button>
+                    </Link>
+                    <Link to="/services">
+                      <Button 
+                        variant="ghost" 
+                        size="lg"
+                        className="text-white border border-white/30 hover:bg-white/10"
+                      >
+                        Our Services
+                      </Button>
+                    </Link>
+                  </div>
+                </FadeInSection>
                 
-                {/* Floating Stats Card */}
-                <div className="absolute -bottom-6 -left-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                        <AnimatedCounter end="98%" />
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">Success Rate</p>
+                <FadeInSection direction="right" delay={300} className="hidden lg:block">
+                  <div className="relative">
+                    <div className="absolute -inset-4 bg-gradient-to-r from-white/20 to-transparent rounded-2xl blur-2xl"></div>
+                    <img 
+                      src={currentBanner.image_url} 
+                      alt={currentBanner.title} 
+                      className="relative rounded-2xl shadow-2xl object-cover h-[600px] w-full"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200';
+                      }}
+                    />
+                    
+                    {/* Floating Stats Card */}
+                    <div className="absolute -bottom-6 -left-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
+                          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <AnimatedCounter end="98%" />
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">Success Rate</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </FadeInSection>
               </div>
-            </FadeInSection>
+              
+              {/* Banner Navigation Dots */}
+              {banners.length > 1 && (
+                <div className="flex justify-center mt-12 space-x-2">
+                  {banners.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToBanner(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        index === currentBannerIndex 
+                          ? 'bg-white w-8' 
+                          : 'bg-white/30 hover:bg-white/50'
+                      }`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </Container>
+          </>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-white/80">No banners available</p>
           </div>
-        </Container>
+        )}
       </section>
 
       {/* Stats Section */}
@@ -216,79 +275,66 @@ const Home = () => {
       </section>
 
       {/* Services Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-800">
-        <Container>
-          <FadeInSection className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6">
-              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              OUR EXPERTISE
-            </div>
-            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Our Services
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              We offer a comprehensive range of accounting and financial services 
-              tailored to your business needs and growth objectives.
-            </p>
-          </FadeInSection>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {services.map((service, index) => (
-              <FadeInSection key={service.id} delay={index * 100}>
-                <Card 
-                  className="h-full group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-                  variant="elevated"
-                >
-                  <div className="p-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                      {service.icon}
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-primary transition-colors duration-300">
-                      {service.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                      {service.description}
-                    </p>
-                    
-                    <ul className="space-y-2 mb-6">
-                      {service.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                          <svg className="w-4 h-4 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    <Link 
-                      to={`/services#${service.id}`} 
-                      className="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors duration-300 group"
-                    >
-                      Learn more
-                      <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
-                  </div>
-                </Card>
-              </FadeInSection>
-            ))}
+      <FadeInSection>
+        <div className="relative py-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full">
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/5 dark:bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 dark:opacity-30 animate-blob"></div>
+            <div className="absolute top-1/2 -left-8 w-64 h-64 bg-secondary/5 dark:bg-secondary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 dark:opacity-30 animate-blob animation-delay-2000"></div>
+            <div className="absolute -bottom-12 left-1/3 w-80 h-80 bg-primary/5 dark:bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70 dark:opacity-30 animate-blob animation-delay-4000"></div>
           </div>
           
-          <FadeInSection className="text-center mt-12">
-            <Link to="/services">
-              <Button variant="primary" size="lg" className="shadow-xl">
-                View All Services
-              </Button>
-            </Link>
-          </FadeInSection>
-        </Container>
-      </section>
+            <div className="relative text-center mb-16">
+              <div className="inline-flex items-center px-6 py-2.5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium mb-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <svg className="w-5 h-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                  Our Services
+                </span>
+              </div>
+              <div className="max-w-3xl mx-auto">
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300">
+                  Comprehensive Financial Solutions
+                </h2>
+                <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
+                  We offer a wide range of financial and accounting services designed to help your business grow, optimize operations, and achieve long-term success in today's competitive landscape.
+                </p>
+              </div>
+            </div>
+            
+            {/* Dynamic Services Section */}
+            <div className="relative">
+              <ServicesSection 
+                limit={3} 
+                showTitle={false} 
+                showCta={true} 
+                className="relative z-10"
+              />
+            </div>
+            
+            {/* Trust indicators */}
+            <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                {[
+                  { value: '15+', label: 'Years Experience' },
+                  { value: '500+', label: 'Happy Clients' },
+                  { value: '99%', label: 'Client Retention' },
+                  { value: '24/7', label: 'Support' }
+                ].map((stat, index) => (
+                  <div key={index} className="group">
+                    <div className="text-3xl font-bold text-primary dark:text-primary-light mb-2 transition-all duration-300 group-hover:scale-110">
+                      {stat.value}
+                    </div>
+                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+        </div>
+      </FadeInSection>
 
       {/* Testimonials Section */}
       <section className="py-24 bg-white dark:bg-gray-900">
@@ -308,46 +354,67 @@ const Home = () => {
             </p>
           </FadeInSection>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <FadeInSection key={testimonial.id} delay={index * 200}>
-                <Card 
-                  className="h-full hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
-                  variant="glass"
-                >
-                  <div className="p-8">
-                    {/* Rating Stars */}
-                    <div className="flex space-x-1 mb-6">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                      ))}
-                    </div>
-                    
-                    <blockquote className="text-gray-700 dark:text-gray-300 mb-6 text-lg leading-relaxed italic">
-                      "{testimonial.quote}"
-                    </blockquote>
-                    
-                    <div className="flex items-center">
-                      <div className="relative w-12 h-12 mr-4">
-                        <img 
-                          src={testimonial.image} 
-                          alt={testimonial.author} 
-                          className="w-full h-full rounded-full object-cover border-2 border-primary"
-                        />
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white dark:border-gray-900"></div>
+          {testimonialsLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+          ) : testimonialsError ? (
+            <div className="text-center py-12">
+              <div className="inline-flex items-center px-4 py-2 rounded-md bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300">
+                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                {testimonialsError}
+              </div>
+            </div>
+          ) : testimonials.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial, index) => (
+                <FadeInSection key={testimonial.id || testimonial._id} delay={index * 200}>
+                  <Card className="h-full hover:shadow-2xl transition-all duration-500 hover:-translate-y-1" variant="glass">
+                    <div className="p-8">
+                      {/* Rating Stars */}
+                      <div className="flex space-x-1 mb-6">
+                        {[...Array(testimonial.rating || 5)].map((_, i) => (
+                          <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                          </svg>
+                        ))}
                       </div>
-                      <div>
-                        <h4 className="font-bold text-gray-900 dark:text-white">{testimonial.author}</h4>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">{testimonial.position}</p>
+                      
+                      <blockquote className="text-gray-700 dark:text-gray-300 mb-6 text-lg leading-relaxed italic">
+                        "{testimonial.content}"
+                      </blockquote>
+                      
+                      <div className="flex items-center">
+                        <div className="relative w-12 h-12 mr-4">
+                          <img 
+                            src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.author || 'Anonymous')}&background=random`}
+                            alt={testimonial.author || 'Client'}
+                            className="w-full h-full rounded-full object-cover border-2 border-primary"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.author || 'Anonymous')}&background=random`;
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900 dark:text-white">{testimonial.author || 'Anonymous'}</h4>
+                          {testimonial.position && (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm">{testimonial.position}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              </FadeInSection>
-            ))}
-          </div>
+                  </Card>
+                </FadeInSection>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500 dark:text-gray-400">No testimonials available at the moment.</p>
+            </div>
+          )}
         </Container>
       </section>
 
@@ -387,7 +454,7 @@ const Home = () => {
               <Link to="/contact" className="w-full">
                 <Button 
                   size="lg"
-                  className="w-full px-2 py-2 bg-white text-primary-700 hover:bg-gray-50 shadow-md hover:shadow-lg transition-all duration-200"
+                  className="w-full px-2 py-2 bg-white text-primary-700 hover:bg-gray-50 dark:bg-primary-600 dark:text-white dark:hover:bg-primary-700 shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   <span className="font-medium">Schedule Consultation</span>
                 </Button>
@@ -407,25 +474,53 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* Trust Indicators */}
+      {/* Trusted Companies */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border-t border-gray-100 dark:border-gray-700/50">
         <Container>
           <FadeInSection className="text-center">
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-10">
               Trusted by innovative companies worldwide
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex items-center justify-center p-4 rounded-xl bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                  <div className="relative w-32 h-12 flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
-                    <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-lg blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                    <span className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
-                      LOGO {i}
-                    </span>
+            {companiesLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : companiesError ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                {companiesError}
+              </div>
+            ) : trustedCompanies.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
+                {trustedCompanies.map((company) => (
+                  <div 
+                    key={company._id} 
+                    className="flex items-center justify-center p-4 rounded-xl bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                  >
+                    <div className="relative w-32 h-12 flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                      {company.logo ? (
+                        <img 
+                          src={company.logo_url} 
+                          alt={company.company_name} 
+                          className="h-8 w-auto max-w-full object-contain"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(company.company_name || 'Company')}&background=random`;
+                          }}
+                        />
+                      ) : (
+                        <span className="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
+                          {company.company_name || 'Company'}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                No companies to display at the moment.
+              </div>
+            )}
           </FadeInSection>
         </Container>
       </section>

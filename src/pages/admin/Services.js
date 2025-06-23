@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const Services = () => {
-  const { 
-    services, 
+  const {
+    services,
     categories,
-    fetchServices, 
+    fetchServices,
     fetchCategories,
-    createService, 
-    updateService, 
-    deleteService, 
-    loading, 
-    error 
+    createService,
+    updateService,
+    deleteService,
+    loading,
+    error,
   } = useData();
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -22,11 +22,11 @@ const Services = () => {
     categoryId: '',
     imageUrl: '',
     is_published: true,
-    features: []
+    features: [],
   });
   const [featureInput, setFeatureInput] = useState('');
   const [formErrors, setFormErrors] = useState({});
-  const [activeFilter, setActiveFilter] = useState('all');
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     fetchServices();
@@ -37,7 +37,7 @@ const Services = () => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
@@ -45,7 +45,7 @@ const Services = () => {
     if (featureInput.trim()) {
       setFormData({
         ...formData,
-        features: [...formData.features, featureInput.trim()]
+        features: [...formData.features, featureInput.trim()],
       });
       setFeatureInput('');
     }
@@ -54,7 +54,7 @@ const Services = () => {
   const removeFeature = (index) => {
     setFormData({
       ...formData,
-      features: formData.features.filter((_, i) => i !== index)
+      features: formData.features.filter((_, i) => i !== index),
     });
   };
 
@@ -70,7 +70,6 @@ const Services = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     try {
@@ -79,7 +78,6 @@ const Services = () => {
       } else {
         await createService(formData);
       }
-      
       setIsModalOpen(false);
       setEditingId(null);
       setFormData({
@@ -88,7 +86,7 @@ const Services = () => {
         categoryId: '',
         imageUrl: '',
         is_published: true,
-        features: []
+        features: [],
       });
     } catch (err) {
       console.error('Error saving service:', err);
@@ -103,7 +101,7 @@ const Services = () => {
       categoryId: service.categoryId,
       imageUrl: service.imageUrl || '',
       is_published: service.is_published !== false,
-      features: service.features || []
+      features: service.features || [],
     });
     setIsModalOpen(true);
   };
@@ -118,19 +116,10 @@ const Services = () => {
     }
   };
 
-  const filteredServices = activeFilter === 'all' 
-    ? services 
-    : services.filter(service => service.categoryId === activeFilter);
-
-  const getCategoryNameById = (categoryId) => {
-    const category = categories.find(cat => cat.id === categoryId);
-    return category ? category.name : 'Uncategorized';
-  };
-
   return (
-    <div className="container mx-auto px-4">
+    <div className={`container mx-auto px-4 min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} py-6`}>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">Services</h1>
+        <h1 className={`text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Services</h1>
         <button
           onClick={() => {
             setEditingId(null);
@@ -140,112 +129,67 @@ const Services = () => {
               categoryId: categories.length > 0 ? categories[0].id : '',
               imageUrl: '',
               is_published: true,
-              features: []
+              features: [],
             });
             setIsModalOpen(true);
           }}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-sm"
+          className={`${isDarkMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-blue-600 hover:bg-blue-700'} text-white px-4 py-2 rounded-md shadow-sm transition-colors`}
         >
           Add New Service
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className={`${isDarkMode ? 'bg-red-900 bg-opacity-30 border-red-700' : 'bg-red-100 border-red-400'} border px-4 py-3 rounded mb-4 ${isDarkMode ? 'text-red-200' : 'text-red-700'}`}>
           <p>{error}</p>
         </div>
       )}
 
-      {/* Category Filter */}
-      <div className="mb-6">
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 rounded-md ${
-              activeFilter === 'all'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            All
-          </button>
-          {categories.map(category => (
-            <button
-              key={category.id}
-              onClick={() => setActiveFilter(category.id)}
-              className={`px-4 py-2 rounded-md ${
-                activeFilter === category.id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {loading ? (
         <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900"></div>
+          <div className={`animate-spin rounded-full h-10 w-10 border-b-2 ${isDarkMode ? 'border-white' : 'border-gray-900'}`}></div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredServices.length === 0 ? (
-            <div className="bg-white shadow-md rounded-lg p-6 text-center text-gray-500 col-span-full">
-              No services found. {activeFilter !== 'all' ? 'Try selecting a different category or create a new service.' : 'Create your first service!'}
+          {services.length === 0 ? (
+            <div className={`${isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-500'} shadow-md rounded-lg p-6 text-center col-span-full`}>
+              No services found. Create your first one!
             </div>
           ) : (
-            filteredServices.map((service) => (
-              <div key={service.id} className="bg-white shadow-md rounded-lg overflow-hidden">
-                {service.imageUrl && (
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src={service.imageUrl}
-                      alt={service.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
+            services.map((service) => (
+              <div key={service.id} className={`${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'} shadow-md rounded-lg overflow-hidden transition-colors`}>
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h2 className="text-xl font-semibold text-gray-800">{service.title}</h2>
-                    <div className="flex space-x-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+                    <div className="flex items-center">
+                      {service.imageUrl && (
+                        <img src={service.imageUrl} alt={service.title} className="mr-4 w-12 h-12 object-cover rounded" />
+                      )}
+                      <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{service.title}</h2>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => handleEdit(service)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className={`${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'} transition-colors`}
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(service.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className={`${isDarkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-800'} transition-colors`}
                       >
                         Delete
                       </button>
                     </div>
                   </div>
                   
-                  <div className="text-sm text-gray-500 mb-3">
-                    Category: {getCategoryNameById(service.categoryId)}
-                  </div>
-                  
-                  <p className="text-gray-600 mb-4">{service.description}</p>
-                  
-                  {service.features && service.features.length > 0 && (
-                    <div className="mt-4">
-                      <h3 className="text-lg font-semibold mb-2">Features</h3>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {service.features.map((feature, index) => (
-                          <li key={index} className="text-gray-600">{feature}</li>
-                        ))}
-                      </ul>
-                    </div>
+                  {service.description && (
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{service.description}</p>
                   )}
                   
-                  <div className="mt-4 flex items-center">
-                    <span className={`inline-block w-3 h-3 rounded-full mr-2 ${service.is_published ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                    <span className="text-sm text-gray-500">{service.is_published ? 'Published' : 'Not Published'}</span>
+                  <div className={`mt-4 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {service.features.length > 0 && (
+                      <p>{service.features.length} features</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -254,16 +198,16 @@ const Services = () => {
         </div>
       )}
 
-      {/* Service Modal */}
+      {/* Add/Edit Service Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 w-full max-w-2xl max-h-screen overflow-y-auto">
-            <h2 className="text-xl font-semibold mb-4">
+          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-8 w-full max-w-md transition-colors`}>
+            <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
               {editingId ? 'Edit Service' : 'Add New Service'}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="title">
                   Title
                 </label>
                 <input
@@ -272,13 +216,27 @@ const Services = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className={`shadow appearance-none border ${formErrors.title ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
+                  className={`shadow appearance-none border ${formErrors.title ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-700'} leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 />
                 {formErrors.title && <p className="text-red-500 text-xs mt-1">{formErrors.title}</p>}
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoryId">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="description">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  rows="3"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  className={`shadow appearance-none border ${formErrors.description ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-700'} leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                ></textarea>
+              </div>
+
+              <div className="mb-4">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="categoryId">
                   Category
                 </label>
                 <select
@@ -286,7 +244,7 @@ const Services = () => {
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleInputChange}
-                  className={`shadow appearance-none border ${formErrors.categoryId ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
+                  className={`shadow appearance-none border ${formErrors.categoryId ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-700'} leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 >
                   <option value="">Select a category</option>
                   {categories.map(category => (
@@ -299,22 +257,7 @@ const Services = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  rows="4"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className={`shadow appearance-none border ${formErrors.description ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
-                ></textarea>
-                {formErrors.description && <p className="text-red-500 text-xs mt-1">{formErrors.description}</p>}
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageUrl">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="imageUrl">
                   Image URL (optional)
                 </label>
                 <input
@@ -323,12 +266,12 @@ const Services = () => {
                   name="imageUrl"
                   value={formData.imageUrl}
                   onChange={handleInputChange}
-                  className="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className={`shadow appearance-none border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-700'} rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 />
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="features">
                   Features
                 </label>
                 <div className="flex">
@@ -337,17 +280,16 @@ const Services = () => {
                     value={featureInput}
                     onChange={(e) => setFeatureInput(e.target.value)}
                     placeholder="Add a feature"
-                    className="shadow appearance-none border border-gray-300 rounded-l w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className={`shadow appearance-none border border-gray-300 rounded-l w-full py-2 px-3 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-700'} leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   />
                   <button
                     type="button"
                     onClick={addFeature}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r"
+                    className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r`}
                   >
                     Add
                   </button>
                 </div>
-
                 {formData.features.length > 0 && (
                   <ul className="mt-3 border border-gray-200 rounded divide-y">
                     {formData.features.map((feature, index) => (
@@ -366,33 +308,20 @@ const Services = () => {
                 )}
               </div>
 
-              <div className="mb-6">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="is_published"
-                    checked={formData.is_published}
-                    onChange={handleInputChange}
-                    className="mr-2"
-                  />
-                  <span className="text-gray-700">Publish this service</span>
-                </label>
-              </div>
-
               <div className="flex items-center justify-end">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+                  className={`${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-300 hover:bg-gray-400 text-gray-800'} font-bold py-2 px-4 rounded mr-2 transition-colors`}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  className={`${isDarkMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors`}
                 >
-                  {loading ? 'Saving...' : 'Save Service'}
+                  {loading ? 'Saving...' : editingId ? 'Save Changes' : 'Add Service'}
                 </button>
               </div>
             </form>
@@ -403,4 +332,4 @@ const Services = () => {
   );
 };
 
-export default Services; 
+export default Services;

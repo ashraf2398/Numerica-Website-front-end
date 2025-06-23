@@ -5,31 +5,28 @@ import { publicApi } from '../../utils/api';
 
 const About = () => {
   const [aboutData, setAboutData] = useState(null);
+  const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  const teamMembers = [
-    {
-      name: 'John Doe',
-      role: 'CEO & Founder',
-      image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80',
-    },
-    {
-      name: 'Jane Smith',
-      role: 'CTO',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80',
-    },
-    {
-      name: 'Robert Johnson',
-      role: 'Lead Developer',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80',
-    },
-    {
-      name: 'Emily Davis',
-      role: 'Marketing Director',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
-    },
-  ];
+  const [teamLoading, setTeamLoading] = useState(true);
+  const [teamError, setTeamError] = useState(null);
+
+  // Fetch team members from API
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        const response = await publicApi.getTeamMembers();
+        setTeamMembers(response.data || []);
+        setTeamLoading(false);
+      } catch (err) {
+        console.error('Error fetching team members:', err);
+        setTeamError('Failed to load team members. Please try again later.');
+        setTeamLoading(false);
+      }
+    };
+
+    fetchTeamMembers();
+  }, []);
 
   useEffect(() => {
     const fetchAboutData = async () => {
@@ -117,25 +114,25 @@ const About = () => {
               </div>
 
             
-            {/* Right Column - Image */}
-            <div className="md:w-1/2 relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                  alt="Team collaboration"
-                  className="w-full h-auto rounded-2xl"
-                />
-                {/* Decorative elements */}
-                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-secondary/20 rounded-full -z-10"></div>
-              </div>
-              {/* Stats */}
-              <div className="absolute -bottom-8 -left-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
-                <div className="text-3xl font-bold text-primary">25+</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Years Experience</div>
+              {/* Right Column - Image */}
+              <div className="md:w-1/2 relative">
+                <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                  <img 
+                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Team collaboration"
+                    className="w-full h-auto rounded-2xl"
+                  />
+                  {/* Decorative elements */}
+                  <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-secondary/20 rounded-full -z-10"></div>
+                </div>
+                {/* Stats */}
+                <div className="absolute -bottom-8 -left-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
+                  <div className="text-3xl font-bold text-primary">25+</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Years Experience</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </Container>
       </section>
 
@@ -201,8 +198,9 @@ const About = () => {
         </Container>
       </section>
 
+     
       {/* Company Image */}
-      {aboutData.image_url && (
+      {aboutData?.image_url && (
         <section className="mb-16">
           <Container>
             <div className="rounded-lg overflow-hidden shadow-xl">
@@ -250,106 +248,54 @@ const About = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                   </svg>
                 </a>
-                </div>
-              </Card>
+              </div>
+            </Card>
 
-              {/* Integrity */}
-              <Card className="group p-8 h-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="flex flex-col h-full">
-                  <div className="mb-6 text-primary inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Integrity</h3>
-                  <p className="text-gray-600 dark:text-gray-300 flex-grow mb-6">
-                    We operate with honesty, transparency, and the highest ethical standards in everything we do.
-                  </p>
-                  <a href="#integrity" className="inline-flex items-center text-primary font-medium hover:text-primary/80 transition-colors group-hover:translate-x-1">
-                    Learn more
-                    <svg className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                    </svg>
-                  </a>
+            {/* Integrity */}
+            <Card className="group p-8 h-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex flex-col h-full">
+                <div className="mb-6 text-primary inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
                 </div>
-              </Card>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Integrity</h3>
+                <p className="text-gray-600 dark:text-gray-300 flex-grow mb-6">
+                  We operate with honesty, transparency, and the highest ethical standards in everything we do.
+                </p>
+                <a href="#integrity" className="inline-flex items-center text-primary font-medium hover:text-primary/80 transition-colors group-hover:translate-x-1">
+                  Learn more
+                  <svg className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </a>
+              </div>
+            </Card>
 
-              {/* Innovation */}
-              <Card className="group p-8 h-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="flex flex-col h-full">
-                  <div className="mb-6 text-primary inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 16V8m0 0l-3 3m3-3l3 3" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Innovation</h3>
-                  <p className="text-gray-600 dark:text-gray-300 flex-grow mb-6">
-                    We embrace change and continuously explore new ideas to deliver cutting-edge solutions.
-                  </p>
-                  <a href="#innovation" className="inline-flex items-center text-primary font-medium hover:text-primary/80 transition-colors group-hover:translate-x-1">
-                    Learn more
-                    <svg className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                    </svg>
-                  </a>
+            {/* Innovation */}
+            <Card className="group p-8 h-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex flex-col h-full">
+                <div className="mb-6 text-primary inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 16V8m0 0l-3 3m3-3l3 3" />
+                  </svg>
                 </div>
-              </Card>
-            </div>
-        </Container>
-      </section>
-
-      {/* Team Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-800">
-        <Container>
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-              Our Team
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Meet Our Leadership Team
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              The brilliant minds behind our success. Our leadership team brings together diverse expertise and a shared passion for innovation.
-            </p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Innovation</h3>
+                <p className="text-gray-600 dark:text-gray-300 flex-grow mb-6">
+                  We embrace change and continuously explore new ideas to deliver cutting-edge solutions.
+                </p>
+                <a href="#innovation" className="inline-flex items-center text-primary font-medium hover:text-primary/80 transition-colors group-hover:translate-x-1">
+                  Learn more
+                  <svg className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </a>
+              </div>
+            </Card>
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {teamMembers.map((member, index) => (
-              <Card key={index} className="group overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
-                <div className="relative overflow-hidden h-72">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                    <div>
-                      <h3 className="text-xl font-bold text-white">{member.name}</h3>
-                      <p className="text-primary-200">{member.role}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="flex justify-center space-x-4 mt-4">
-                    <a href={`#${member.name.toLowerCase().replace(/\s+/g, '-')}`} className="text-gray-500 hover:text-primary transition-colors">
-                      <span className="sr-only">LinkedIn</span>
-                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                      </svg>
-                    </a>
-                    <a href={`#${member.name.toLowerCase().replace(/\s+/g, '-')}`} className="text-gray-500 hover:text-primary transition-colors">
-                      <span className="sr-only">Twitter</span>
-                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </Container>
+
+      </Container>
       </section>
 
       {/* CTA Section */}

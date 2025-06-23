@@ -41,8 +41,8 @@ const Navbar = () => {
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? 'bg-white shadow-lg py-2' 
-          : 'bg-transparent py-4'
+          ? 'bg-white dark:bg-gray-900 shadow-lg py-2' 
+          : 'bg-transparent py-4 dark:bg-gradient-to-b dark:from-gray-900/80 dark:to-transparent'
       }`}
     >
       <Container>
@@ -68,10 +68,10 @@ const Navbar = () => {
                 to={link.path}
                 className={`relative text-sm font-medium transition-all duration-300 group ${
                   location.pathname === link.path
-                    ? 'text-black font-semibold'
+                    ? 'text-primary dark:text-primary-300 font-semibold'
                     : isScrolled 
-                      ? 'text-gray-800 hover:text-primary dark:text-gray-200 dark:hover:text-primary'
-                      : 'text-white/90 hover:text-white dark:text-white/80 dark:hover:text-white'
+                      ? 'text-gray-800 hover:text-primary dark:text-gray-200 dark:hover:text-primary-300'
+                      : 'text-white/90 hover:text-white dark:text-gray-200 dark:hover:text-white'
                 }`}
               >
                 {link.label}
@@ -100,7 +100,11 @@ const Navbar = () => {
           <div className="lg:hidden flex items-center space-x-3">
             <ThemeToggle />
             <button
-              className="text-white dark:text-white/80 focus:outline-none p-2 rounded-lg hover:bg-white/10 transition-colors duration-300"
+              className={`focus:outline-none p-2 rounded-lg transition-colors duration-300 ${
+                isScrolled 
+                  ? 'text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+                  : 'text-white hover:bg-white/10 dark:text-white/90'
+              }`}
               onClick={toggleMenu}
               aria-label="Toggle menu"
             >
@@ -123,15 +127,15 @@ const Navbar = () => {
         <div className={`lg:hidden overflow-hidden transition-all duration-500 ${
           isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}>
-          <div className="py-6 space-y-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl mt-4 border border-gray-200 dark:border-gray-700">
+          <div className="py-6 space-y-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg rounded-2xl mt-4 border border-gray-200 dark:border-gray-800 shadow-xl">
             {navLinks.map((link, index) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={`block px-6 py-3 text-base font-medium transition-all duration-300 transform hover:translate-x-2 ${
                   location.pathname === link.path
-                    ? 'text-primary bg-primary/10 border-r-4 border-primary font-semibold'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800'
+                    ? 'text-primary bg-primary/10 border-r-4 border-primary font-semibold dark:bg-primary/20 dark:border-primary-400'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'
                 }`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
