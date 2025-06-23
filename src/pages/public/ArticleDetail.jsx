@@ -103,25 +103,27 @@ const ArticleDetail = () => {
   return (
     <div className="bg-white dark:bg-gray-900">
       {/* Article Header */}
-      <div className="relative bg-gray-50 dark:bg-gray-800 pt-32 pb-20">
+      <section className="relative py-20 md:py-32 bg-gradient-to-r from-primary to-primary-dark text-white">
         <Container>
           <FadeInSection>
-            <div className="max-w-3xl mx-auto text-center">
-              <div className="text-sm font-medium text-primary mb-4">
-                {formatDate(article.created_at)}
-              </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                {article.title}
-              </h1>
-              <div className="flex items-center justify-center space-x-4">
-                <div className="text-gray-600 dark:text-gray-300">
-                  By {article.author}
+            <div className="relative z-10">
+              <div className="max-w-4xl mx-auto text-center">
+                <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 text-white text-sm font-medium mb-4">
+                  {formatDate(article.created_at)}
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                  {article.title}
+                </h1>
+                <div className="flex items-center justify-center space-x-4">
+                  <div className="text-white/90">
+                    By {article.author}
+                  </div>
                 </div>
               </div>
             </div>
           </FadeInSection>
         </Container>
-      </div>
+      </section>
 
       {/* Article Content */}
       <div className="py-16">

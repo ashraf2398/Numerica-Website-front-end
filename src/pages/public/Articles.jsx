@@ -169,31 +169,17 @@ const Articles = () => {
   return (
     <div className="min-h-screen pt-24 pb-16 bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-secondary text-white py-16 md:py-24 mb-12">
+          <section className="relative py-20 md:py-32 bg-gradient-to-r from-primary to-primary-dark text-white">
         <Container>
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Latest Articles & Insights</h1>
-            <p className="text-xl opacity-90">Stay updated with the latest trends, tutorials, and news in technology and development.</p>
-            
-            {/* Search Bar */}
-            <div className="mt-8 max-w-2xl mx-auto">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search articles..."
-                  className="w-full px-6 py-4 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-white/50"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <svg 
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+          <div className="relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 text-white text-sm font-medium mb-4">
+                Get in Touch
               </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Our Team</h1>
+              <p className="text-xl text-white/90 max-w-2xl mx-auto">
+                Have questions or need assistance? Our dedicated team is here to help you with all your financial needs.
+              </p>
             </div>
           </div>
         </Container>
