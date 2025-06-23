@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const AboutEntries = () => {
   const { aboutEntries, fetchAboutEntries, createAboutEntry, updateAboutEntry, deleteAboutEntry, loading, error } = useData();
@@ -13,6 +14,7 @@ const AboutEntries = () => {
     order: 0
   });
   const [formErrors, setFormErrors] = useState({});
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     fetchAboutEntries();
@@ -97,12 +99,12 @@ const AboutEntries = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
+    <div className={`container mx-auto px-4 min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} py-6`}>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">About Entries</h1>
+        <h1 className={`text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>About Entries</h1>
         <button
           onClick={openNewEntryModal}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-sm"
+          className={`${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'} text-white px-4 py-2 rounded-md shadow-sm transition-colors`}
         >
           Add New Entry
         </button>
@@ -121,28 +123,28 @@ const AboutEntries = () => {
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {aboutEntries.length === 0 ? (
-            <div className="bg-white shadow-md rounded-lg p-6 text-center text-gray-500">
+            <div className={`${isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-600'} shadow-md rounded-lg p-6 text-center`}>
               No about entries found. Create your first one!
             </div>
           ) : (
             aboutEntries.map((entry) => (
-              <div key={entry.id} className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div key={entry.id} className={`${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'} shadow-md rounded-lg overflow-hidden transition-colors`}>
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
-                    <h2 className="text-xl font-semibold text-gray-800">{entry.title}</h2>
+                    <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{entry.title}</h2>
                     <div className="flex space-x-2">
-                      <div className={`text-sm px-2 py-1 rounded-full ${entry.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                      <div className={`text-sm px-2 py-1 rounded-full ${entry.is_published ? (isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800') : (isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800')}`}>
                         {entry.is_published ? 'Published' : 'Unpublished'}
                       </div>
                       <button
                         onClick={() => handleEdit(entry)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className={`${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'} transition-colors`}
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(entry.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className={`${isDarkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-800'} transition-colors`}
                       >
                         Delete
                       </button>
@@ -161,9 +163,9 @@ const AboutEntries = () => {
                       </div>
                     )}
                     <div className={entry.imageUrl ? 'md:w-3/4' : 'w-full'}>
-                      <p className="text-gray-600 whitespace-pre-line">{entry.content}</p>
+                      <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} whitespace-pre-line`}>{entry.content}</p>
                       {entry.order !== undefined && (
-                        <p className="text-sm text-gray-500 mt-4">Order: {entry.order}</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-4`}>Order: {entry.order}</p>
                       )}
                     </div>
                   </div>
@@ -177,13 +179,13 @@ const AboutEntries = () => {
       {/* About Entry Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 w-full max-w-xl max-h-screen overflow-y-auto">
-            <h2 className="text-xl font-semibold mb-4">
+          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-8 w-full max-w-xl max-h-screen overflow-y-auto transition-colors`}>
+            <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
               {editingId ? 'Edit About Entry' : 'Add New About Entry'}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="title">
                   Title
                 </label>
                 <input
@@ -192,12 +194,12 @@ const AboutEntries = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className={`shadow appearance-none border ${formErrors.title ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
+                  className={`shadow appearance-none border ${formErrors.title ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-700'} leading-tight focus:outline-none focus:shadow-outline`}
                 />
                 {formErrors.title && <p className="text-red-500 text-xs mt-1">{formErrors.title}</p>}
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="is_published">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="is_published">
                   Publication Status
                 </label>
                 <div className="flex items-center">
@@ -209,17 +211,17 @@ const AboutEntries = () => {
                     onChange={handleInputChange}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="is_published" className="ml-2 block text-gray-700">
+                  <label htmlFor="is_published" className={`ml-2 block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                     {formData.is_published ? 'Published' : 'Unpublished'}
                   </label>
-                  <div className={`ml-2 px-2 py-1 text-xs rounded-full ${formData.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                  <div className={`ml-2 px-2 py-1 text-xs rounded-full ${formData.is_published ? (isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800') : (isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800')}`}>
                     {formData.is_published ? 'Visible to public' : 'Hidden from public'}
                   </div>
                 </div>
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="content">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="content">
                   Content
                 </label>
                 <textarea
@@ -228,13 +230,13 @@ const AboutEntries = () => {
                   rows="6"
                   value={formData.content}
                   onChange={handleInputChange}
-                  className={`shadow appearance-none border ${formErrors.content ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
+                  className={`shadow appearance-none border ${formErrors.content ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-700'} leading-tight focus:outline-none focus:shadow-outline`}
                 ></textarea>
                 {formErrors.content && <p className="text-red-500 text-xs mt-1">{formErrors.content}</p>}
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageUrl">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="imageUrl">
                   Image URL (optional)
                 </label>
                 <input
@@ -248,7 +250,7 @@ const AboutEntries = () => {
               </div>
 
               <div className="mb-6">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="order">
+                <label className={`block ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} text-sm font-bold mb-2`} htmlFor="order">
                   Display Order
                 </label>
                 <input
@@ -260,21 +262,21 @@ const AboutEntries = () => {
                   min="0"
                   className="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
-                <p className="text-gray-500 text-xs mt-1">Lower numbers appear first</p>
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mt-1`}>Lower numbers appear first</p>
               </div>
 
               <div className="flex items-center justify-end">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+                  className={`${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-300 hover:bg-gray-400 text-gray-800'} font-bold py-2 px-4 rounded mr-2 transition-colors`}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  className={`${isDarkMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors`}
                 >
                   {loading ? 'Saving...' : 'Save Entry'}
                 </button>

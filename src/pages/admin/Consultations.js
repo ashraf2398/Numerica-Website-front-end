@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const Consultations = () => {
   const { consultations, fetchConsultations, updateConsultationStatus, loading, error } = useData();
+  const { isDarkMode } = useTheme();
+
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -23,174 +26,106 @@ const Consultations = () => {
         setSelectedConsultation(prev => ({ ...prev, status }));
       }
     } catch (err) {
-      console.error('Error updating consultation status:', err);
+      console.error('Error updating status:', err);
     }
   };
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'in_progress':
-        return 'bg-blue-100 text-blue-800';
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+      case 'pending': return `${isDarkMode ? 'bg-yellow-900 text-yellow-300' : 'bg-yellow-100 text-yellow-800'}`;
+      case 'in_progress': return `${isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800'}`;
+      case 'completed': return `${isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-800'}`;
+      case 'cancelled': return `${isDarkMode ? 'bg-red-900 text-red-300' : 'bg-red-100 text-red-800'}`;
+      default: return `${isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-800'}`;
     }
   };
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Unknown date';
-    
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
     }).format(date);
   };
 
   const formatStatus = (status) => {
     if (!status) return 'Unknown';
-    
-    return status
-      .replace('_', ' ')
+    return status.replace('_', ' ')  
       .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' ');
   };
 
-  const filteredConsultations = statusFilter === 'all'
+  const filtered = statusFilter === 'all'
     ? consultations
     : consultations.filter(c => c.status === statusFilter);
 
   return (
-    <div className="container mx-auto px-4">
+    <div className={`${isDarkMode ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'} container mx-auto px-4 py-6 min-h-screen`}>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">Consultation Requests</h1>
-        <p className="text-gray-600 mt-1">Manage and respond to incoming consultation requests</p>
+        <h1 className="text-2xl font-semibold">Consultation Requests</h1>
+        <p className="mt-1 text-sm text-gray-500">Manage and respond to incoming consultation requests</p>
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <p>{error}</p>
+        <div className={`${isDarkMode ? 'bg-red-900 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-400'} border px-4 py-3 rounded mb-4`}>
+          {error}
         </div>
       )}
 
-      {/* Status Filter */}
-      <div className="mb-6">
-        <div className="flex flex-wrap gap-2">
+      {/* Filter Buttons */}
+      <div className="mb-6 flex flex-wrap gap-2">
+        {['all','pending','in_progress','completed','cancelled'].map(status => (
           <button
-            onClick={() => setStatusFilter('all')}
-            className={`px-4 py-2 rounded-md ${
-              statusFilter === 'all'
+            key={status}
+            onClick={() => setStatusFilter(status)}
+            className={`px-4 py-2 rounded ${
+              statusFilter === status
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setStatusFilter('pending')}
-            className={`px-4 py-2 rounded-md ${
-              statusFilter === 'pending'
-                ? 'bg-yellow-600 text-white'
-                : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-            }`}
-          >
-            Pending
-          </button>
-          <button
-            onClick={() => setStatusFilter('in_progress')}
-            className={`px-4 py-2 rounded-md ${
-              statusFilter === 'in_progress'
-                ? 'bg-blue-600 text-white'
-                : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-            }`}
-          >
-            In Progress
-          </button>
-          <button
-            onClick={() => setStatusFilter('completed')}
-            className={`px-4 py-2 rounded-md ${
-              statusFilter === 'completed'
-                ? 'bg-green-600 text-white'
-                : 'bg-green-100 text-green-800 hover:bg-green-200'
-            }`}
-          >
-            Completed
-          </button>
-          <button
-            onClick={() => setStatusFilter('cancelled')}
-            className={`px-4 py-2 rounded-md ${
-              statusFilter === 'cancelled'
-                ? 'bg-red-600 text-white'
-                : 'bg-red-100 text-red-800 hover:bg-red-200'
-            }`}
-          >
-            Cancelled
-          </button>
-        </div>
+                : isDarkMode
+                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}>{formatStatus(status)}</button>
+        ))}
       </div>
 
       {loading ? (
         <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900"></div>
+          <div className={`${isDarkMode ? 'border-gray-300' : 'border-gray-900'} animate-spin rounded-full h-10 w-10 border-b-2`}></div>
         </div>
       ) : (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          {filteredConsultations.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">
-              No consultation requests found with the selected filter.
-            </div>
+        <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-md rounded-lg overflow-hidden border`}>  
+          {filtered.length === 0 ? (
+            <div className="p-6 text-center text-gray-500">No requests found.</div>
           ) : (
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Service
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  {['Name','Date','Service','Status','Actions'].map(title => (
+                    <th key={title} className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                      {title}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredConsultations.map((consultation) => (
-                  <tr key={consultation.id}>
+              <tbody className="divide-y divide-gray-200">
+                {filtered.map(c => (
+                  <tr key={c.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{consultation.name}</div>
-                      <div className="text-sm text-gray-500">{consultation.email}</div>
+                      <div className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{c.name}</div>
+                      <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{c.email}</div>
                     </td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{formatDate(c.createdAt)}</td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{c.service || 'General'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{formatDate(consultation.createdAt)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{consultation.service || 'General Inquiry'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(consultation.status)}`}>
-                        {formatStatus(consultation.status)}
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(c.status)}`}>  
+                        {formatStatus(c.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleViewDetails(consultation)}
-                        className="text-blue-600 hover:text-blue-900"
+                      <button 
+                        onClick={() => handleViewDetails(c)} 
+                        className={`${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-900'}`}
                       >
                         View Details
                       </button>
@@ -203,127 +138,74 @@ const Consultations = () => {
         </div>
       )}
 
-      {/* Consultation Details Modal */}
+      {/* Modal */}
       {isModalOpen && selectedConsultation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 w-full max-w-3xl max-h-screen overflow-y-auto">
-            <div className="flex justify-between items-start mb-6">
-              <h2 className="text-xl font-semibold">Consultation Request Details</h2>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
+          <div className={`${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} w-full max-w-3xl p-6 rounded-lg shadow-lg max-h-full overflow-auto`}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Consultation Details</h2>
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className={`text-2xl ${isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}
+                aria-label="Close modal"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                ×
               </button>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Client Information</h3>
-                <p className="mt-2 text-sm text-gray-900">
-                  <span className="font-medium">Name:</span> {selectedConsultation.name}
-                </p>
-                <p className="mt-1 text-sm text-gray-900">
-                  <span className="font-medium">Email:</span> {selectedConsultation.email}
-                </p>
+                <h3 className="text-sm font-medium text-gray-500">Client Info</h3>
+                <p className="mt-2 text-sm"><span className="font-medium">Name:</span> <span className={isDarkMode ? 'text-gray-200' : 'text-gray-800'}>{selectedConsultation.name}</span></p>
+                <p className="mt-1 text-sm"><span className="font-medium">Email:</span> <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{selectedConsultation.email}</span></p>
                 {selectedConsultation.phone && (
-                  <p className="mt-1 text-sm text-gray-900">
-                    <span className="font-medium">Phone:</span> {selectedConsultation.phone}
-                  </p>
+                  <p className="mt-1 text-sm"><span className="font-medium">Phone:</span> <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{selectedConsultation.phone}</span></p>
                 )}
               </div>
-              
               <div>
                 <h3 className="text-sm font-medium text-gray-500">Request Details</h3>
-                <p className="mt-2 text-sm text-gray-900">
-                  <span className="font-medium">Date Submitted:</span> {formatDate(selectedConsultation.createdAt)}
-                </p>
-                <p className="mt-1 text-sm text-gray-900">
-                  <span className="font-medium">Status:</span>{' '}
-                  <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusBadgeClass(selectedConsultation.status)}`}>
-                    {formatStatus(selectedConsultation.status)}
-                  </span>
-                </p>
+                <p className="mt-2 text-sm"><span className="font-medium">Date:</span> <span className={isDarkMode ? 'text-gray-200' : 'text-gray-800'}>{formatDate(selectedConsultation.createdAt)}</span></p>
+                <p className="mt-1 text-sm"><span className="font-medium">Status:</span> <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${getStatusBadgeClass(selectedConsultation.status)}`}>{formatStatus(selectedConsultation.status)}</span></p>
                 {selectedConsultation.service && (
-                  <p className="mt-1 text-sm text-gray-900">
-                    <span className="font-medium">Service:</span> {selectedConsultation.service}
-                  </p>
+                  <p className="mt-1 text-sm"><span className="font-medium">Service:</span> <span className={isDarkMode ? 'text-gray-200' : 'text-gray-800'}>{selectedConsultation.service}</span></p>
                 )}
               </div>
             </div>
-
             <div className="mb-6">
               <h3 className="text-sm font-medium text-gray-500 mb-2">Message</h3>
-              <div className="border border-gray-200 rounded-md p-4 bg-gray-50">
-                <p className="text-sm text-gray-900 whitespace-pre-line">{selectedConsultation.message}</p>
+              <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} p-4 rounded-md border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>  
+                <p className="text-sm whitespace-pre-line">{selectedConsultation.message}</p>
               </div>
             </div>
-
             {selectedConsultation.additionalInfo && (
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Additional Information</h3>
-                <div className="border border-gray-200 rounded-md p-4 bg-gray-50">
-                  <p className="text-sm text-gray-900 whitespace-pre-line">{selectedConsultation.additionalInfo}</p>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">Additional Info</h3>
+                <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} p-4 rounded-md border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                  <p className="text-sm whitespace-pre-line">{selectedConsultation.additionalInfo}</p>
                 </div>
               </div>
             )}
-
             <div className="mb-6">
               <h3 className="text-sm font-medium text-gray-500 mb-2">Change Status</h3>
               <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => handleUpdateStatus(selectedConsultation.id, 'pending')}
-                  disabled={selectedConsultation.status === 'pending'}
-                  className={`px-3 py-1 rounded text-sm font-medium ${
-                    selectedConsultation.status === 'pending'
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                      : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                  }`}
-                >
-                  Pending
-                </button>
-                <button
-                  onClick={() => handleUpdateStatus(selectedConsultation.id, 'in_progress')}
-                  disabled={selectedConsultation.status === 'in_progress'}
-                  className={`px-3 py-1 rounded text-sm font-medium ${
-                    selectedConsultation.status === 'in_progress'
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                      : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                  }`}
-                >
-                  In Progress
-                </button>
-                <button
-                  onClick={() => handleUpdateStatus(selectedConsultation.id, 'completed')}
-                  disabled={selectedConsultation.status === 'completed'}
-                  className={`px-3 py-1 rounded text-sm font-medium ${
-                    selectedConsultation.status === 'completed'
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                      : 'bg-green-100 text-green-800 hover:bg-green-200'
-                  }`}
-                >
-                  Completed
-                </button>
-                <button
-                  onClick={() => handleUpdateStatus(selectedConsultation.id, 'cancelled')}
-                  disabled={selectedConsultation.status === 'cancelled'}
-                  className={`px-3 py-1 rounded text-sm font-medium ${
-                    selectedConsultation.status === 'cancelled'
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                      : 'bg-red-100 text-red-800 hover:bg-red-200'
-                  }`}
-                >
-                  Cancelled
-                </button>
+                {['pending','in_progress','completed','cancelled'].map(status => (
+                  <button
+                    key={status}
+                    onClick={() => handleUpdateStatus(selectedConsultation.id, status)}
+                    disabled={selectedConsultation.status === status}
+                    className={selectedConsultation.status === status
+                      ? `px-3 py-1 rounded text-sm font-medium ${isDarkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'} cursor-not-allowed`
+                      : `px-3 py-1 rounded text-sm font-medium ${getStatusBadgeClass(status).replace(/-100/, '-200')}`
+                    }
+                  >
+                    {formatStatus(status)}
+                  </button>
+                ))}
               </div>
             </div>
-
             <div className="flex justify-end">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className={`px-4 py-2 rounded ${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
               >
                 Close
               </button>
@@ -335,4 +217,4 @@ const Consultations = () => {
   );
 };
 
-export default Consultations; 
+export default Consultations;

@@ -1,64 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login, currentUser } = useAuth();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
-  
-  // If already logged in, redirect to dashboard
-  if (currentUser) {
-    console.log('User already logged in, redirecting to dashboard');
-    return <Navigate to="/admin/dashboard" replace />;
-  }
-  
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (currentUser) navigate('/admin/dashboard', { replace: true });
+  }, [currentUser, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setError('');
+
     if (!email || !password) {
-      setError('Please enter both email and password');
+      setError('Please enter both email and password.');
       return;
     }
-    
+
     try {
-      setError('');
       setIsLoading(true);
-      console.log('Attempting login...');
-      const user = await login(email, password);
-      console.log('Login successful:', user);
-      console.log('Token stored:', localStorage.getItem('token'));
+      await login(email, password);
       navigate('/admin/dashboard');
     } catch (err) {
-      console.error('Login error:', err);
       setError('Failed to sign in. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-lg shadow-md">
+    <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'} min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8`}>
+      <div className={`${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} max-w-md w-full space-y-8 p-10 rounded-lg shadow-xl transition-colors`}>
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold">
             Admin Dashboard
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm">
             Sign in to your account
           </p>
         </div>
-        
+
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <span className="block sm:inline">{error}</span>
+          <div className={`${isDarkMode ? 'bg-red-900 bg-opacity-50 text-red-300' : 'bg-red-100 text-red-700'} border ${isDarkMode ? 'border-red-700' : 'border-red-400'} px-4 py-3 rounded`} role="alert">
+            {error}
           </div>
         )}
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -69,10 +66,10 @@ const Login = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className={`${isDarkMode ? 'bg-gray-700 border-gray-600 placeholder-gray-400 text-gray-100' : 'bg-white border-gray-300 placeholder-gray-500 text-gray-900'} appearance-none rounded-none relative block w-full px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                placeholder="Email address"
               />
             </div>
             <div>
@@ -83,10 +80,10 @@ const Login = () => {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className={`${isDarkMode ? 'bg-gray-700 border-gray-600 placeholder-gray-400 text-gray-100' : 'bg-white border-gray-300 placeholder-gray-500 text-gray-900'} appearance-none rounded-none relative block w-full px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                placeholder="Password"
               />
             </div>
           </div>
@@ -95,10 +92,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                isLoading ? 'opacity-70 cursor-not-allowed' : ''
-              }`}
-            >
+              className={`${isDarkMode ? 'bg-indigo-500 hover:bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}>
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
@@ -108,4 +102,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;
