@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 import Container from '../../components/ui/Container';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
-import GradientBackground from '../../components/ui/GradientBackground';
 import FadeInSection from '../../components/ui/FadeInSection';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 
@@ -92,36 +92,47 @@ const Home = () => {
     }
   ];
 
+  // Get the current theme
+  const { isDarkMode } = useTheme();
+
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
-        <GradientBackground variant="primary" className="absolute inset-0" />
-        
-        {/* Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-white/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-white/10 rounded-full blur-lg animate-pulse delay-500"></div>
+      <section className={`relative min-h-screen flex items-center overflow-hidden ${
+        isDarkMode 
+          ? 'bg-gradient-to-br from-gray-900 to-gray-800' 
+          : 'bg-gradient-to-br from-primary-600 to-primary-800'
+      }`}>
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white rounded-full mix-blend-overlay blur-3xl animate-float"></div>
+          <div className={`absolute bottom-1/3 right-1/4 w-96 h-96 ${
+            isDarkMode ? 'bg-primary-600' : 'bg-primary-400'
+          } rounded-full mix-blend-overlay blur-3xl animate-float animation-delay-2000`}></div>
+          <div className={`absolute top-1/2 right-1/3 w-80 h-80 ${
+            isDarkMode ? 'bg-primary-500' : 'bg-primary-300'
+          } rounded-full mix-blend-overlay blur-3xl animate-float animation-delay-4000`}></div>
         </div>
         
-        <Container className="relative z-10 pt-32 pb-20">
+        <Container className="relative z-10 py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <FadeInSection className="text-white">
-              <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+            <FadeInSection>
+              <div className="inline-flex items-center px-6 py-2.5 bg-white/10 backdrop-blur-md rounded-full text-white text-sm font-medium mb-8 border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <span className="w-2.5 h-2.5 bg-green-400 rounded-full mr-3 animate-pulse"></span>
                 Trusted by 500+ Businesses
               </div>
               
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight text-white">
                 Expert
-                <span className="block bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+                <span className={`block bg-gradient-to-r from-white ${
+                  isDarkMode ? 'to-primary-300' : 'to-primary-200'
+                } bg-clip-text text-transparent`}>
                   Financial
                 </span>
-                <span className="block text-4xl md:text-6xl">Solutions</span>
+                <span className="block text-4xl md:text-6xl lg:text-7xl font-semibold text-white/90">Solutions</span>
               </h1>
               
-              <p className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+              <p className="text-xl md:text-2xl mb-10 text-white/90 leading-relaxed max-w-2xl">
                 Comprehensive accounting, tax planning, and financial advisory services 
                 to help your business thrive in today's complex financial landscape.
               </p>
@@ -129,9 +140,9 @@ const Home = () => {
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
                 <Link to="/contact">
                   <Button 
-                    variant="outline" 
+                    variant="primary"
                     size="lg" 
-                    className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-primary group"
+                    className="group relative overflow-hidden px-8 py-4 text-lg font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
                   >
                     <span className="mr-2">Get Started</span>
                     <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -223,7 +234,7 @@ const Home = () => {
             </p>
           </FadeInSection>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
             {services.map((service, index) => (
               <FadeInSection key={service.id} delay={index * 100}>
                 <Card 
@@ -341,67 +352,76 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-24 overflow-hidden">
-        <GradientBackground variant="secondary" className="absolute inset-0" />
+      <section className="relative py-28 md:py-36 overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-primary-700 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-1/2 -right-1/4 w-full h-[200%] bg-radial-gradient from-white/10 to-transparent opacity-30 dark:opacity-20 animate-float"></div>
+          <div className="absolute -bottom-1/2 -left-1/4 w-full h-[200%] bg-radial-gradient from-white/5 to-transparent opacity-20 dark:opacity-10 animate-float animation-delay-3000"></div>
+          <div className="absolute inset-0 bg-grid-white/10 dark:bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,transparent_10%,black)]"></div>
+        </div>
         
         <Container className="relative z-10">
-          <FadeInSection className="text-center text-white">
-            <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
-              <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-              GET STARTED TODAY
+          <FadeInSection className="text-center">
+            <div className="inline-flex items-center px-5 py-2.5 bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-full text-sm font-medium mb-8 border border-white/30 dark:border-white/20 hover:bg-white/30 dark:hover:bg-white/15 transition-all duration-300 group">
+              <span className="w-2.5 h-2.5 bg-green-400 rounded-full mr-3 shadow-glow shadow-green-400/50 animate-pulse"></span>
+              <span className="text-white font-medium">
+                GET STARTED TODAY
+              </span>
+              <svg className="w-4 h-4 ml-2 text-white transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
             </div>
             
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white">
               Ready to Transform Your
-              <span className="block bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-white to-primary-50 bg-clip-text text-transparent">
                 Financial Operations?
               </span>
             </h2>
             
-            <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto leading-relaxed">
-              Schedule a free consultation with our experts today and discover how we can help your business grow and thrive.
+            <p className="text-xl md:text-2xl mb-10 opacity-90 max-w-3xl mx-auto leading-relaxed font-light text-white">
+              Schedule a free consultation with our experts and discover how we can help your business achieve financial excellence and sustainable growth.
             </p>
             
-            <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-              <Link to="/contact">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-lg mx-auto">
+              <Link to="/contact" className="w-full">
                 <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white hover:text-primary group"
+                  size="lg"
+                  className="w-full px-2 py-2 bg-white text-primary-700 hover:bg-gray-50 shadow-md hover:shadow-lg transition-all duration-200"
                 >
-                  <span className="mr-2">Schedule Consultation</span>
-                  <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
+                  <span className="font-medium">Schedule Consultation</span>
                 </Button>
               </Link>
               
-              <Link to="/services">
+              {/* <Link to="/services" className="w-full">
                 <Button 
-                  variant="ghost" 
+                  variant="outline"
                   size="lg"
-                  className="text-white border border-white/30 hover:bg-white/10"
+                  className="w-full px-2 py-2 border-2 border-white text-white hover:bg-white/10 transition-colors duration-200"
                 >
-                  Explore Services
+                  <span className="font-medium">Explore Services</span>
                 </Button>
-              </Link>
+              </Link> */}
             </div>
           </FadeInSection>
         </Container>
       </section>
 
       {/* Trust Indicators */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-800">
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border-t border-gray-100 dark:border-gray-700/50">
         <Container>
           <FadeInSection className="text-center">
-            <p className="text-gray-500 dark:text-gray-400 uppercase tracking-wider text-sm font-medium mb-8">
-              Trusted by leading companies across industries
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-10">
+              Trusted by innovative companies worldwide
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-60">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex items-center justify-center">
-                  <div className="w-24 h-12 bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold">LOGO</span>
+                <div key={i} className="flex items-center justify-center p-4 rounded-xl bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                  <div className="relative w-32 h-12 flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-lg blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <span className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
+                      LOGO {i}
+                    </span>
                   </div>
                 </div>
               ))}

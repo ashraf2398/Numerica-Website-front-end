@@ -1,11 +1,17 @@
 import axios from 'axios';
+import config from '../config';
 
 // Create an axios instance with default config
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api',
+  baseURL: config.endpoints.default,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    'Accept': 'application/json',
+  },
+  timeout: config.api.timeout,
+  withCredentials: true, // Include cookies in cross-origin requests
+  validateStatus: (status) => status >= 200 && status < 500, // Consider HTTP status codes less than 500 as success
 });
 
 // Initialize with token if it exists
@@ -26,19 +32,68 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Add response interceptor to handle errors
+// Add response interceptor to handle errors and retries
+const { maxRetries, retryDelay } = config.api;
+
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const { response } = error;
+  async (error) => {
+    const { config, response: errorResponse } = error;
     
     // Handle authentication errors
-    if (response && response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+    if (errorResponse?.status === 401) {
+      localStorage.removeItem(config.auth.tokenKey);
+      localStorage.removeItem(config.auth.userKey);
       window.location.href = '/admin/login';
+      return Promise.reject(error);
     }
     
+    // If config doesn't exist or retry option is not set, reject
+    if (!config || !config.retry) {
+      return Promise.reject(error);
+    }
+
+    // Set retry count if not set
+    config.retryCount = config.retryCount || 0;
+    
+    // Check if we've maxed out the total number of retries
+    if (config.retryCount >= maxRetries) {
+      return Promise.reject(error);
+    }
+    
+    // Increase the retry count
+    config.retryCount += 1;
+    
+    // Create new promise to handle exponential backoff
+    const backoff = new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, retryDelay * config.retryCount);
+    });
+
+    // Return the promise in which we'll make the retry
+    await backoff;
+    return api(config);
+  }
+);
+
+// Request interceptor for common headers and error handling
+api.interceptors.request.use(
+  (config) => {
+    // Add auth token to every request if it exists
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    // Enable retry for all GET requests by default
+    if (config.method?.toLowerCase() === 'get') {
+      config.retry = true;
+    }
+    
+    return config;
+  },
+  (error) => {
     return Promise.reject(error);
   }
 );
