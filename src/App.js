@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Contexts
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Public Components
 import Navbar from './components/public/Navbar';
@@ -33,7 +34,7 @@ import Consultations from './pages/admin/Consultations';
 // Layout component for public pages
 const PublicLayout = ({ children }) => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       <Navbar />
       <main className="flex-grow">
         {children}
@@ -45,131 +46,133 @@ const PublicLayout = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <DataProvider>
-          <Routes>
-            {/* Public Routes */}
-            <Route 
-              path="/" 
-              element={
-                <PublicLayout>
-                  <Home />
-                </PublicLayout>
-              } 
-            />
-            
-            <Route 
-              path="/about" 
-              element={
-                <PublicLayout>
-                  <About />
-                </PublicLayout>
-              } 
-            />
-            
-            <Route 
-              path="/services" 
-              element={
-                <PublicLayout>
-                  <Services />
-                </PublicLayout>
-              } 
-            />
-            
-            <Route 
-              path="/team" 
-              element={
-                <PublicLayout>
-                  <Team />
-                </PublicLayout>
-              } 
-            />
-            
-            <Route 
-              path="/articles" 
-              element={
-                <PublicLayout>
-                  <div className="pt-32 pb-16">
-                    <h1 className="text-3xl text-center">Articles Page</h1>
-                    <p className="text-center">(To be implemented)</p>
-                  </div>
-                </PublicLayout>
-              } 
-            />
-            
-            <Route 
-              path="/contact" 
-              element={
-                <PublicLayout>
-                  <Contact />
-                </PublicLayout>
-              } 
-            />
-            
-            {/* Admin Login Route */}
-            <Route 
-              path="/admin/login" 
-              element={<Login />} 
-            />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={<DashboardLayout />}>
+    <ThemeProvider>
+      <Router>
+        <AuthProvider>
+          <DataProvider>
+            <Routes>
+              {/* Public Routes */}
               <Route 
-                path="dashboard" 
-                element={<Dashboard />} 
+                path="/" 
+                element={
+                  <PublicLayout>
+                    <Home />
+                  </PublicLayout>
+                } 
               />
+              
               <Route 
-                path="admins" 
-                element={<Admins />} 
+                path="/about" 
+                element={
+                  <PublicLayout>
+                    <About />
+                  </PublicLayout>
+                } 
               />
+              
               <Route 
-                path="about" 
-                element={<AboutEntries />} 
+                path="/services" 
+                element={
+                  <PublicLayout>
+                    <Services />
+                  </PublicLayout>
+                } 
               />
+              
               <Route 
-                path="categories" 
-                element={<Categories />} 
+                path="/team" 
+                element={
+                  <PublicLayout>
+                    <Team />
+                  </PublicLayout>
+                } 
               />
+              
               <Route 
-                path="services" 
-                element={<AdminServices />} 
+                path="/articles" 
+                element={
+                  <PublicLayout>
+                    <div className="pt-32 pb-16">
+                      <h1 className="text-3xl text-center">Articles Page</h1>
+                      <p className="text-center">(To be implemented)</p>
+                    </div>
+                  </PublicLayout>
+                } 
               />
+              
               <Route 
-                path="contacts" 
-                element={<Contacts />} 
+                path="/contact" 
+                element={
+                  <PublicLayout>
+                    <Contact />
+                  </PublicLayout>
+                } 
               />
+              
+              {/* Admin Login Route */}
               <Route 
-                path="team" 
-                element={<TeamMembers />} 
+                path="/admin/login" 
+                element={<Login />} 
               />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={<DashboardLayout />}>
+                <Route 
+                  path="dashboard" 
+                  element={<Dashboard />} 
+                />
+                <Route 
+                  path="admins" 
+                  element={<Admins />} 
+                />
+                <Route 
+                  path="about" 
+                  element={<AboutEntries />} 
+                />
+                <Route 
+                  path="categories" 
+                  element={<Categories />} 
+                />
+                <Route 
+                  path="services" 
+                  element={<AdminServices />} 
+                />
+                <Route 
+                  path="contacts" 
+                  element={<Contacts />} 
+                />
+                <Route 
+                  path="team" 
+                  element={<TeamMembers />} 
+                />
+                <Route 
+                  path="consultations" 
+                  element={<Consultations />} 
+                />
+                {/* Redirect to dashboard if no specific admin route */}
+                <Route 
+                  path="" 
+                  element={<Dashboard />} 
+                />
+              </Route>
+              
+              {/* 404 Route */}
               <Route 
-                path="consultations" 
-                element={<Consultations />} 
+                path="*" 
+                element={
+                  <PublicLayout>
+                    <div className="pt-32 pb-16 text-center">
+                      <h1 className="text-5xl font-bold mb-4">404</h1>
+                      <p className="text-xl mb-8">Page not found</p>
+                    </div>
+                  </PublicLayout>
+                } 
               />
-              {/* Redirect to dashboard if no specific admin route */}
-              <Route 
-                path="" 
-                element={<Dashboard />} 
-              />
-            </Route>
-            
-            {/* 404 Route */}
-            <Route 
-              path="*" 
-              element={
-                <PublicLayout>
-                  <div className="pt-32 pb-16 text-center">
-                    <h1 className="text-5xl font-bold mb-4">404</h1>
-                    <p className="text-xl mb-8">Page not found</p>
-                  </div>
-                </PublicLayout>
-              } 
-            />
-          </Routes>
-        </DataProvider>
-      </AuthProvider>
-    </Router>
+            </Routes>
+          </DataProvider>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 
