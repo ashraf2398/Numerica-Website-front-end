@@ -46,6 +46,8 @@ const ArticlesList = () => {
     );
   }
 
+  
+
   if (error) {
     return (
       <div className="py-20">
