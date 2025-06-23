@@ -19,6 +19,8 @@ import About from './pages/public/About';
 import Services from './pages/public/Services';
 import Contact from './pages/public/Contact';
 import Team from './pages/public/Team';
+import ArticlesList from './pages/public/ArticlesList';
+import ArticleDetail from './pages/public/ArticleDetail';
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -92,10 +94,15 @@ function App() {
                 path="/articles" 
                 element={
                   <PublicLayout>
-                    <div className="pt-32 pb-16">
-                      <h1 className="text-3xl text-center">Articles Page</h1>
-                      <p className="text-center">(To be implemented)</p>
-                    </div>
+                    <ArticlesList />
+                  </PublicLayout>
+                } 
+              />
+              <Route 
+                path="/articles/:id" 
+                element={
+                  <PublicLayout>
+                    <ArticleDetail />
                   </PublicLayout>
                 } 
               />

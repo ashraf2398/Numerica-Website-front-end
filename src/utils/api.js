@@ -116,7 +116,20 @@ export const publicApi = {
   
   // Contact
   getContactInfo: () => api.get('/public/contact'),
-  submitConsultation: (data) => api.post('/public/consultations', data)
+  submitConsultation: (data) => api.post('/public/consultations', data),
+  
+  // Testimonials
+  getTestimonials: () => api.get('/public/testimonials'),
+  
+  // Trusted Companies
+  getTrustedCompanies: () => api.get('/public/trusted-companies'),
+  
+  // Articles
+  getArticles: () => api.get('/public/articles'),
+  getArticle: (id) => api.get(`/public/articles/${id}`),
+  
+  // Home Banners
+  getHomeBanners: () => api.get('/public/home-banners')
 };
 
 // Admin API
