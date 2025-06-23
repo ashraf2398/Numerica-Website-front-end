@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { toast } from 'react-toastify';
 import { adminApi } from '../../utils/api';
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiSave, FiMenu, FiChevronUp, FiChevronDown, FiImage, FiLink } from 'react-icons/fi';
