@@ -116,118 +116,151 @@ const Team = () => {
   });
 
   return (
-    <div className="pt-32 pb-16 min-h-screen">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-secondary to-primary text-white py-16 mb-12">
+      <section className="relative py-20 md:py-32 bg-gradient-to-r from-primary to-primary-dark text-white">
         <Container>
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Team</h1>
-            <p className="text-xl leading-relaxed">
-              Meet our dedicated team of financial professionals committed to your success.
-            </p>
+          <div className="relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 text-white dark:text-white/90 hover:bg-white/30 transition-colors text-sm font-medium mb-4">
+                Our Team
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">Meet Our Expert Team</h1>
+              <p className="text-xl text-white/90 max-w-2xl mx-auto">
+                A dedicated group of financial professionals committed to delivering exceptional service and results for our clients.
+              </p>
+            </div>
           </div>
         </Container>
       </section>
 
-      {/* Leadership Team */}
-      <section className="mb-16">
+      {/* Team Grid */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
         <Container>
-          <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">Leadership</h2>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Our Leadership Team
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Meet the experienced professionals who guide our company with expertise and vision.
+            </p>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sortedTeamMembers.map((member) => (
-              <Card key={member.id} className="overflow-hidden h-full flex flex-col">
-                {/* Member Image */}
-                <div className="h-64 overflow-hidden">
-                  <img 
-                    src={member.image || getDefaultImage(member.name)} 
-                    alt={member.name}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = getDefaultImage(member.name);
-                    }}
-                  />
-                </div>
-                
-                {/* Member Details */}
-                <div className="p-6 flex-grow flex flex-col">
-                  <div className="mb-4 flex-grow">
-                    <h3 className="text-xl font-bold text-gray-800 mb-1">{member.name}</h3>
-                    <p className="text-primary font-medium mb-3">{member.title}</p>
-                    <p className="text-gray-600">{member.description}</p>
+              <div key={member.id} className="group relative h-full">
+                <Card className="h-full flex flex-col bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/50 hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-300 group-hover:shadow-xl dark:group-hover:shadow-gray-800/50 overflow-hidden">
+                  {/* Member Image */}
+                  <div className="h-72 overflow-hidden">
+                    <img 
+                      src={member.image || getDefaultImage(member.name)} 
+                      alt={member.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = getDefaultImage(member.name);
+                      }}
+                    />
                   </div>
                   
-                  {/* Contact Information */}
-                  <div className="mb-4">
-                    {member.email && (
-                      <div className="flex items-center mb-2">
-                        <svg className="h-4 w-4 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <a href={`mailto:${member.email}`} className="text-gray-600 hover:text-primary text-sm">
-                          {member.email}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {member.phone && (
-                      <div className="flex items-center">
-                        <svg className="h-4 w-4 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        <a href={`tel:${member.phone}`} className="text-gray-600 hover:text-primary text-sm">
-                          {member.phone}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Social Media Links */}
-                  {member.social_media && Object.keys(member.social_media).length > 0 && (
-                    <div className="flex space-x-3">
-                      {Object.entries(member.social_media).map(([platform, url]) => (
-                        url && (
-                          <a 
-                            key={platform}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-500 hover:text-primary transition-colors"
-                            aria-label={`${member.name}'s ${platform}`}
-                          >
-                            {getSocialIcon(platform)}
-                          </a>
-                        )
-                      ))}
+                  {/* Member Details */}
+                  <div className="p-6 flex-grow flex flex-col">
+                    <div className="mb-4 flex-grow">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1 group-hover:text-primary dark:group-hover:text-primary-light transition-colors">
+                        {member.name}
+                      </h3>
+                      <p className="text-primary dark:text-primary-light font-medium mb-3">
+                        {member.title}
+                      </p>
+                      {member.description && (
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                          {member.description}
+                        </p>
+                      )}
                     </div>
-                  )}
-                </div>
-              </Card>
+                    
+                    {/* Contact Information */}
+                    <div className="mb-4 space-y-2">
+                      {member.email && (
+                        <div className="flex items-center">
+                          <svg className="h-4 w-4 text-primary dark:text-primary-light mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                          <a 
+                            href={`mailto:${member.email}`} 
+                            className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light truncate transition-colors"
+                            title={member.email}
+                          >
+                            {member.email}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {member.phone && (
+                        <div className="flex items-center">
+                          <svg className="h-4 w-4 text-primary dark:text-primary-light mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
+                          <a 
+                            href={`tel:${member.phone}`} 
+                            className="text-sm text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light transition-colors"
+                          >
+                            {member.phone}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Social Media Links */}
+                    {member.social_media && Object.keys(member.social_media).length > 0 && (
+                      <div className="flex space-x-3 pt-3 border-t border-gray-100 dark:border-gray-700/50">
+                        {Object.entries(member.social_media).map(([platform, url]) => (
+                          url && (
+                            <a 
+                              key={platform}
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-400 hover:text-primary dark:hover:text-primary-light transition-colors"
+                              aria-label={`${member.name}'s ${platform}`}
+                            >
+                              {getSocialIcon(platform)}
+                            </a>
+                          )
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </div>
             ))}
           </div>
         </Container>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gray-50 py-16">
+      <section className="py-20 bg-gradient-to-r from-primary to-primary-dark">
         <Container>
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Want to Join Our Team?</h2>
-            <p className="text-lg text-gray-600 mb-8">
-              We're always looking for talented professionals to join our growing team.
-              Send your resume to careers@numericatax.com.
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+              Ready to Join Our Team?
+            </h2>
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              We're always looking for talented professionals who are passionate about making a difference in the financial world.
             </p>
-            <a 
-              href="mailto:careers@numericatax.com" 
-              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-opacity-90 transition-colors"
-            >
-              Apply Now
-            </a>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+              <a 
+                href="/careers" 
+                className="px-8 py-3 border-2 border-white text-white dark:text-white/90 font-medium rounded-md hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
+              >
+                Apply Now
+              </a>
+            </div>
           </div>
         </Container>
       </section>
-    </div>
+    </div>                                                              
   );
 };
 

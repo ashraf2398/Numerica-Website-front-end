@@ -41,7 +41,7 @@ const Navbar = () => {
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg py-2' 
+          ? 'bg-white shadow-lg py-2' 
           : 'bg-transparent py-4'
       }`}
     >
@@ -68,8 +68,10 @@ const Navbar = () => {
                 to={link.path}
                 className={`relative text-sm font-medium transition-all duration-300 group ${
                   location.pathname === link.path
-                    ? 'text-primary'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary'
+                    ? 'text-black font-semibold'
+                    : isScrolled 
+                      ? 'text-gray-800 hover:text-primary dark:text-gray-200 dark:hover:text-primary'
+                      : 'text-white/90 hover:text-white dark:text-white/80 dark:hover:text-white'
                 }`}
               >
                 {link.label}
@@ -98,7 +100,7 @@ const Navbar = () => {
           <div className="lg:hidden flex items-center space-x-3">
             <ThemeToggle />
             <button
-              className="text-gray-700 dark:text-gray-300 focus:outline-none p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300"
+              className="text-white dark:text-white/80 focus:outline-none p-2 rounded-lg hover:bg-white/10 transition-colors duration-300"
               onClick={toggleMenu}
               aria-label="Toggle menu"
             >
@@ -128,7 +130,7 @@ const Navbar = () => {
                 to={link.path}
                 className={`block px-6 py-3 text-base font-medium transition-all duration-300 transform hover:translate-x-2 ${
                   location.pathname === link.path
-                    ? 'text-primary bg-primary/10 border-r-4 border-primary'
+                    ? 'text-primary bg-primary/10 border-r-4 border-primary font-semibold'
                     : 'text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
                 style={{ animationDelay: `${index * 100}ms` }}
